@@ -101,6 +101,12 @@ class Blackjack
 
 end
 
+class Hand
+	def initialize(cards=[])
+		@cards = cards
+	end
+end
+
 shoe = Shoe.new
 puts shoe.cards.length == 0
 shoe.add_decks(3)
