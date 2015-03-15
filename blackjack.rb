@@ -1,3 +1,6 @@
+require 'byebug'
+require_relative 'hands'
+
 class Shoe
 	attr_reader :cards
 
@@ -15,6 +18,10 @@ class Shoe
 			@cards += deck.cards
 			@deck_number += 1
 		end
+	end
+
+	def pop
+		@cards.pop
 	end
 
 	def cut_deck
@@ -40,7 +47,7 @@ class Deck
 
 	def create_standard_deck
 		card_values = {'Two' => 2,'Three' => 3,'Four' => 4,'Five' => 5,'Six' => 6,'Seven' => 7,'Eight' => 8,
-						'Nine' => 9,'Ten' => 10,'Jack' => 11,'Queen' => 12,'King' => 13,'Ace' => 11}
+						'Nine' => 9,'Ten' => 10,'Jack' => 10,'Queen' => 10,'King' => 10,'Ace' => 11}
 		suits = ['S', 'D', 'C', 'H']
 		suits.each do |suit|
 			card_values.each do |rank, value|
@@ -73,47 +80,73 @@ class Blackjack
 	end
 
 	def play
-		@dealer_cards = []
-		@player_cards = []
-		@player_score = 0
-		@dealer_score = 0
 		deal
+		if @dealer_hand.blackjack
+			return 'Player loses, dealer has blackjack'
+		elsif @player_hand.blackjack
+			return 'Player wins, they have blackjack'
+		end
+		round
+	end
+
+	def round
+		if @dealer_hand.busted || @player_hand.busted
+			return compare
+		end
+		puts 'What would you like to do?'
+		move = gets.chomp
+		if ['hit', 'Hit', 'h'].include?(move)
+			@player_hand.hit(@cards.pop)
+			round
+		else
+			@dealer_hand.play(@cards)
+			compare
+		end
 	end
 
 	def deal
-		2.times {@dealer_cards.push(@cards.pop); @player_cards.push(@cards.pop)}
+		dealer_cards = []
+		player_cards = []
+		2.times {dealer_cards.push(@cards.pop); player_cards.push(@cards.pop)}
+		@dealer_hand = DealerHand.new('Dealer', dealer_cards)
+		@player_hand = PlayerHand.new('Player', player_cards)
 		show_status
 	end
 
 	def show_status
-		puts "Dealer is showing a #{dealer_shows}. Player has a #{player_string}"
+		@dealer_hand.initial_deal
+		@player_hand.initial_deal
+		puts "Dealer is showing a #{dealer_shows}."
+		puts "Player has a #{player_string}"
 	end
 
 	def dealer_shows
-		@dealer_score += @dealer_cards.first.value
-		@dealer_cards.first.rank
+		@dealer_hand.cards.first.rank
 	end
+
 
 	def player_string
-		@player_cards.each {|card| @player_score += card.value }
-		"#{@player_cards[0].rank} and #{@player_cards[1].rank}.  Value: #{@player_score}"
+		"#{@player_hand.cards[0].rank} and #{@player_hand.cards[1].rank}.  Value: #{@player_hand.value}"
 	end
 
-end
-
-class Hand
-	def initialize(cards=[])
-		@cards = cards
+	def compare
+		if @dealer_hand.busted
+			'Player Wins'
+		elsif @player_hand.busted
+			'Player loses'
+		elsif @player_hand.value > @dealer_hand.value
+			return 'Player wins'
+		elsif @dealer_hand.value > @player_hand.value
+			return 'Player loses'
+		end
+			
 	end
+
 end
 
 shoe = Shoe.new
-puts shoe.cards.length == 0
-shoe.add_decks(3)
-puts shoe.cards.length == 156
-game = Blackjack.new(shoe)
+shoe.add_decks(6)
 shoe.shuffle_shoe
-game.play
-
-
-
+blackjack = Blackjack.new(shoe)
+system("clear")
+puts blackjack.play
