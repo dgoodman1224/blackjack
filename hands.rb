@@ -4,6 +4,7 @@ class Hand
 
 	def initialize(name, cards)
 		@busted = false
+		@has_ace = false
 		@name = name
 		@cards = cards
 		initial_deal
@@ -14,19 +15,32 @@ class Hand
 
 	def initial_deal
 		@value = 0
-		@cards.each {|card| @value += card.value}
+		@cards.each do |card| 
+			@value += card.value
+			if card.rank == 'Ace'
+				@has_ace = true
+			end
+		end
 	end
-
+	
 	def hit(card)
 		@value += card.value
-		if @value < 21
-			puts "#{@name} gets a #{card.value}.  #{@name} now has #{@value}"
+		if card.rank == 'Ace'
+			@has_ace = true
+		end
+		if @value == 21
+			puts "#{@name} gets a #{card.rank}. #{@name} now has has 21"
 			return
+		elsif @value < 21
+				puts "#{@name} gets a #{card.rank}.  #{@name} now has #{@value}"
+		elsif @value > 21 && @has_ace
+			puts "#{@name} gets a #{card.rank}. #{@name} would have #{@value}"
+			puts "Ace will be treated as a 1"
+			@value -= 10
+			puts "#{@name} now has #{@value}"
 		elsif @value > 21
-			puts "#{@name} gets a #{card.value}. #{@name} has busted with #{@value}"
 			@busted = true
-		else
-			puts "#{@name} gets a #{card.value}. #{@name} now has has 21"
+			puts "#{@name} gets a #{card.value}. #{@name} has busted with #{@value}"
 		end
 	end
 end
@@ -37,9 +51,10 @@ class DealerHand < Hand
 		until @value > 16
 			self.hit(remaining_cards.pop)
 		end
-		puts "Dealer has a #{@value}"
+		puts "Dealer stays with a #{@value}"
 		
 	end
+
 end
 
 class PlayerHand < Hand

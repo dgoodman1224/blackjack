@@ -2,12 +2,16 @@ Command Line Blackjack so that nobody will ever know.
 
 It will just look like you are getting ready to push
 
-1- Basic Blackjack
+1- Basic Blackjack- Done
 
-2- Betting
+2-Aces- Done
 
-3- Advanced blackjack (doubledown, blackjack, split)
+3-Testing  TDD is dead
 
-4- Color additions
+4- Betting
 
-5- Fake pulling and what not
+5- Advanced blackjack (doubledown, blackjack, split)
+
+6- Color additions
+
+7- Fake pulling and what not
