@@ -1,3 +1,13 @@
+class Player
+
+	def initialize(name)
+		@name = name
+		@bankroll = 1000
+		@last_bet = 100
+	end
+end
+
+
 class Hand
 
 	attr_reader :cards, :value, :blackjack, :busted
@@ -49,9 +59,15 @@ class DealerHand < Hand
 	def play(remaining_cards)
 		puts "Dealer flips over a #{@cards[1].rank}.  They have #{@value}"
 		until @value > 16
+			sleep(1)
 			self.hit(remaining_cards.pop)
 		end
-		puts "Dealer stays with a #{@value}"
+		if @value > 21
+			@busted = true
+			puts "Dealer has busted with a #{@value}"
+		else
+			puts "Dealer stays with a #{@value}"
+		end
 		
 	end
 

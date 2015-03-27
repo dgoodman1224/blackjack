@@ -1,14 +1,23 @@
 require 'byebug'
 require_relative 'hands'
 require_relative 'decks'
+
+
 class Blackjack
 
 	def initialize(shoe)
 		@cards = shoe.cards
 	end
 
+	def start_game
+		system("clear")
+		puts "Welcome to blackjack, type exit at any point to stop the game"
+		sleep(1.25)
+		100.times { play }
+	end
+
 	def play
-		3.times {puts ''}
+		puts ''
 		deal
 		if @dealer_hand.blackjack
 			return 'Player loses, dealer has blackjack'
@@ -24,6 +33,9 @@ class Blackjack
 		end
 		puts 'What would you like to do?'
 		move = gets.chomp
+		if move.downcase == 'exit'
+			end_game
+		end
 		if ['hit', 'Hit', 'h'].include?(move)
 			@player_hand.hit(@cards.pop)
 			round
@@ -73,17 +85,15 @@ class Blackjack
 			
 	end
 
+	def end_game
+		puts "That was fun please come back soon"
+		exit
+	end
+
 end
 
 shoe = Shoe.new
 shoe.add_decks(6)
 shoe.shuffle_shoe
 blackjack = Blackjack.new(shoe)
-system("clear")
-puts blackjack.play
-puts blackjack.play
-puts blackjack.play
-puts blackjack.play
-puts blackjack.play
-puts blackjack.play
-puts blackjack.play
+blackjack.start_game
