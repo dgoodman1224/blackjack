@@ -1,7 +1,16 @@
 require 'byebug'
 require_relative 'hands'
 require_relative 'decks'
+require_relative 'players'
 
+def start_game
+	shoe = Shoe.new
+	shoe.add_decks(6)
+	shoe.shuffle_shoe
+	blackjack = Blackjack.new(shoe)
+	player = Player.new('David')
+	blackjack.start_game(player)
+end
 
 class Blackjack
 
@@ -9,15 +18,19 @@ class Blackjack
 		@cards = shoe.cards
 	end
 
-	def start_game
+	def start_game(player)
 		system("clear")
 		puts "Welcome to blackjack, type exit at any point to stop the game"
 		sleep(1.25)
-		100.times { play }
+		100.times { play(player) }
 	end
 
-	def play
-		puts ''
+	def play(player)
+		puts "Welcome #{player.name}, you have a bankroll of #{player.bankroll}"
+		puts "Current bet is #{player.current_bet} enter a number"
+		new_bet = gets.chomp
+		player.update_bet(new_bet) 
+		puts "The new bet is now #{player.current_bet}"
 		deal
 		if @dealer_hand.blackjack
 			return 'Player loses, dealer has blackjack'
@@ -25,6 +38,7 @@ class Blackjack
 			return 'Player wins, they have blackjack'
 		end
 		round
+		compare
 	end
 
 	def round
@@ -41,7 +55,7 @@ class Blackjack
 			round
 		else
 			@dealer_hand.play(@cards)
-			compare
+			puts compare
 		end
 	end
 
@@ -71,10 +85,11 @@ class Blackjack
 	end
 
 	def compare
+		#debugger
 		if @dealer_hand.busted
-			'Player Wins'
+			return 'Player Wins'
 		elsif @player_hand.busted
-			'Player loses'
+			return 'Player loses'
 		elsif @player_hand.value > @dealer_hand.value
 			return 'Player wins'
 		elsif @dealer_hand.value > @player_hand.value
@@ -92,8 +107,4 @@ class Blackjack
 
 end
 
-shoe = Shoe.new
-shoe.add_decks(6)
-shoe.shuffle_shoe
-blackjack = Blackjack.new(shoe)
-blackjack.start_game
+start_game

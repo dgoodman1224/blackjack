@@ -1,13 +1,3 @@
-class Player
-
-	def initialize(name)
-		@name = name
-		@bankroll = 1000
-		@last_bet = 100
-	end
-end
-
-
 class Hand
 
 	attr_reader :cards, :value, :blackjack, :busted
@@ -68,7 +58,7 @@ class DealerHand < Hand
 		else
 			puts "Dealer stays with a #{@value}"
 		end
-		
+
 	end
 
 end
