@@ -25,7 +25,7 @@ class Shoe
 		#places an imaginary stopper, like when you put the yellow thing in
 		length_of_deck = @cards.length
 		ending_point = (length_of_deck/2..length_of_deck*(3/4)).to_a.sample()
-		@cards[ending_point] = 'break'
+		@cards[5] = 'break'
 	end
 
 	def shuffle_shoe
@@ -43,7 +43,7 @@ class Deck
 	end
 
 	def create_standard_deck
-		card_values = {'Two' => 2,'Three' => 3,'Four' => 4,'Five' => 5,'Six' => 6,#'Seven' => 7,'Eight' => 8,
+		card_values = {'Two' => 2,'Three' => 3,'Four' => 4,'Five' => 5,'Six' => 6,'Seven' => 7,'Eight' => 8,
 						'Nine' => 9,'Ten' => 10,'Jack' => 10,'Queen' => 10,'King' => 10,
 						'Ace' => 11}
 		suits = ['S', 'D', 'C', 'H']

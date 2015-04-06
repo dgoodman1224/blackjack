@@ -19,26 +19,33 @@ class Blackjack
 	end
 
 	def start_game(player)
+		@player = player
 		system("clear")
 		puts "Welcome to blackjack, type exit at any point to stop the game"
-		sleep(1.25)
-		100.times { play(player) }
+		until @player.bankroll == 0
+			play(@player)
+		end
 	end
 
 	def play(player)
 		puts "Welcome #{player.name}, you have a bankroll of #{player.bankroll}"
 		puts "Current bet is #{player.current_bet} enter a number"
-		new_bet = gets.chomp
+		new_bet = gets.chomp.to_i
 		player.update_bet(new_bet) 
 		puts "The new bet is now #{player.current_bet}"
+		system("clear")
 		deal
 		if @dealer_hand.blackjack
-			return 'Player loses, dealer has blackjack'
+			@player.loses
+			puts 'Player loses, dealer has blackjack'
+			return
 		elsif @player_hand.blackjack
-			return 'Player wins, they have blackjack'
+			@player.current_bet *= 1.5
+			@player.wins
+			puts "Player has blackjack!  They are paid #{@player.current_bet}"
+			return
 		end
 		round
-		compare
 	end
 
 	def round
@@ -64,7 +71,7 @@ class Blackjack
 		player_cards = []
 		2.times {dealer_cards.push(@cards.pop); player_cards.push(@cards.pop)}
 		@dealer_hand = DealerHand.new('Dealer', dealer_cards)
-		@player_hand = PlayerHand.new('Player', player_cards)
+		@player_hand = PlayerHand.new('Player', player_cards, @player.current_bet)
 		show_status
 	end
 
@@ -84,24 +91,22 @@ class Blackjack
 		"#{@player_hand.cards[0].rank} and #{@player_hand.cards[1].rank}.  Value: #{@player_hand.value}"
 	end
 
-	def compare
-		#debugger
-		if @dealer_hand.busted
+	def compare	
+		if @dealer_hand.busted || @player_hand.value > @dealer_hand.value
+			@player.wins
 			return 'Player Wins'
-		elsif @player_hand.busted
+		elsif @player_hand.busted || @dealer_hand.value > @player_hand.value
+			@player.loses
 			return 'Player loses'
-		elsif @player_hand.value > @dealer_hand.value
-			return 'Player wins'
-		elsif @dealer_hand.value > @player_hand.value
-			return 'Player loses'
-		elsif @dealer_hand.value == @player_hand.value
+		else @dealer_hand.value == @player_hand.value
 			return 'It is a push bitch'
 		end
 			
 	end
 
 	def end_game
-		puts "That was fun please come back soon"
+		puts "That was fun please come back soon!"
+		sleep(2)
 		exit
 	end
 

@@ -16,9 +16,12 @@ class Player
 		end
 	end
 
+	def wins
+		@bankroll += @current_bet
+	end
+
+	def loses
+		@bankroll -= @current_bet
+	end
+
 end
-
-
-david = Player.new('DAvid')
-
-print david.name

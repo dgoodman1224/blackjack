@@ -36,6 +36,7 @@ class Hand
 		elsif @value > 21 && @has_ace
 			puts "#{@name} gets a #{card.rank}. #{@name} would have #{@value}"
 			puts "Ace will be treated as a 1"
+			@has_ace = false
 			@value -= 10
 			puts "#{@name} now has #{@value}"
 		elsif @value > 21
@@ -64,4 +65,15 @@ class DealerHand < Hand
 end
 
 class PlayerHand < Hand
+	def initialize(name, cards, bet)
+		@busted = false
+		@has_ace = false
+		@name = name
+		@cards = cards
+		initial_deal
+		if @value == 21
+			@blackjack = true
+		end
+		@bet = bet
+	end
 end
