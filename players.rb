@@ -11,7 +11,9 @@ class Player
 	end
 
 	def update_bet(new_bet)
-		if new_bet.to_i.is_a? Integer
+		if !new_bet
+			return
+		elsif new_bet.to_i.is_a? Integer
 			@current_bet = new_bet
 		end
 	end

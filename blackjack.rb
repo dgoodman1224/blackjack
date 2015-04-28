@@ -92,7 +92,7 @@ class Blackjack
 	end
 
 	def compare	
-		if @dealer_hand.busted || @player_hand.value > @dealer_hand.value
+		if @dealer_hand.busted || (@player_hand.value > @dealer_hand.value && !@player_hand.busted)
 			@player.wins
 			return 'Player Wins'
 		elsif @player_hand.busted || @dealer_hand.value > @player_hand.value
