@@ -3,15 +3,6 @@ require_relative 'hands'
 require_relative 'decks'
 require_relative 'players'
 
-def start_game
-	shoe = Shoe.new
-	shoe.add_decks(6)
-	shoe.shuffle_shoe
-	blackjack = Blackjack.new(shoe)
-	player = Player.new('David')
-	blackjack.start_game(player)
-end
-
 class Blackjack
 
 	def initialize(shoe)
@@ -111,5 +102,3 @@ class Blackjack
 	end
 
 end
-
-start_game

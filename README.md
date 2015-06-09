@@ -8,7 +8,7 @@ It will just look like you are getting ready to push
 
 3-Testing  TDD is dead
 
-4- Betting
+4- Betting- Done
 
 5- Advanced blackjack (doubledown, blackjack, split)
 

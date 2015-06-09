@@ -7,15 +7,16 @@ class Player
 		@name = name
 		@bankroll = bankroll
 		@current_bet = 50
-		print 'We got a player'
 	end
 
 	def update_bet(new_bet)
-		if !new_bet
-			return
-		elsif new_bet.to_i.is_a? Integer
-			@current_bet = new_bet
+		int_bet = new_bet.to_i
+		if int_bet <= 0
+			puts 'Please enter a valid number'
+			new_bet = gets.chomp
+			return update_bet(new_bet)
 		end
+		@current_bet = int_bet
 	end
 
 	def wins
