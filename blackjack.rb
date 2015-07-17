@@ -14,29 +14,28 @@ class Blackjack
 		system("clear")
 		puts "Welcome to blackjack, type exit at any point to stop the game"
 		until @player.bankroll == 0
-			play(@player)
+			play
 		end
 	end
 
-	def play(player)
-		puts "Welcome #{player.name}, you have a bankroll of #{player.bankroll}"
-		puts "Current bet is #{player.current_bet} enter a number"
-		new_bet = gets.chomp.to_i
-		player.update_bet(new_bet) 
-		puts "The new bet is now #{player.current_bet}"
+	def play
+		@player.place_bet
 		system("clear")
 		deal
-		if @dealer_hand.blackjack
-			@player.loses
-			puts 'Player loses, dealer has blackjack'
-			return
-		elsif @player_hand.blackjack
-			@player.current_bet *= 1.5
-			@player.wins
-			puts "Player has blackjack!  They are paid #{@player.current_bet}"
-			return
+		check_for_double
+		until @player_hand.active == false
+			round
 		end
-		round
+		compare
+	end
+
+	def check_for_double
+		puts 'Would you like to double?'
+		response = gets.chomp
+		if response == 'yes'
+			@player.doubled = true
+			@player_hand.double_down(@cards.pop)
+		end
 	end
 
 	def round
@@ -49,10 +48,11 @@ class Blackjack
 			end_game
 		end
 		if ['hit', 'Hit', 'h'].include?(move)
-			@player_hand.hit(@cards.pop)
+			puts @player_hand.hit(@cards.pop)
 			round
 		else
 			@dealer_hand.play(@cards)
+			@player_hand.active = false
 			puts compare
 		end
 	end
@@ -60,9 +60,12 @@ class Blackjack
 	def deal
 		dealer_cards = []
 		player_cards = []
-		2.times {dealer_cards.push(@cards.pop); player_cards.push(@cards.pop)}
+		2.times {player_cards.push(@cards.pop); dealer_cards.push(@cards.pop)}
 		@dealer_hand = DealerHand.new('Dealer', dealer_cards)
 		@player_hand = PlayerHand.new('Player', player_cards, @player.current_bet)
+		if @dealer_hand.blackjack || @player_hand.blackjack
+			return dealt_blackjack
+		end
 		show_status
 	end
 
@@ -71,6 +74,17 @@ class Blackjack
 		@player_hand.initial_deal
 		puts "Dealer is showing a #{dealer_shows}."
 		puts "Player has a #{player_string}"
+	end
+
+	def dealt_blackjack
+		if @dealer_hand.blackjack
+			@player.loses
+			puts 'Player loses, dealer has blackjack'
+		elsif @player_hand.blackjack
+			@player.current_bet *= 1.5
+			@player.wins
+			puts "Player has blackjack!  They are paid #{@player.current_bet}"
+		end
 	end
 
 	def dealer_shows
@@ -82,7 +96,8 @@ class Blackjack
 		"#{@player_hand.cards[0].rank} and #{@player_hand.cards[1].rank}.  Value: #{@player_hand.value}"
 	end
 
-	def compare	
+	def compare
+		@player_hand.active = false
 		if @dealer_hand.busted || (@player_hand.value > @dealer_hand.value && !@player_hand.busted)
 			@player.wins
 			return 'Player Wins'
@@ -92,7 +107,6 @@ class Blackjack
 		else @dealer_hand.value == @player_hand.value
 			return 'It is a push bitch'
 		end
-			
 	end
 
 	def end_game

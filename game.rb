@@ -2,7 +2,7 @@ require_relative 'blackjack'
 
 def start_game
 	shoe = Shoe.new
-	shoe.add_decks(6)
+	shoe.add_decks(1)
 	shoe.shuffle_shoe
 	blackjack = Blackjack.new(shoe)
 	player = Player.new('David')
