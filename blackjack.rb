@@ -13,20 +13,26 @@ class Blackjack
 		@player = player
 		system("clear")
 		puts "Welcome to blackjack, type exit at any point to stop the game"
-		until @player.bankroll == 0
-			play
+		until @player.bankroll <= 0
+			play_round
 		end
+		system("clear")
+		puts 'You lost all your money, if it was that easy everyone would do it'
+		sleep(3)
 	end
 
-	def play
+	def play_round
 		@player.place_bet
 		system("clear")
 		deal
+		if @dealer_hand.blackjack || @player_hand.blackjack
+			return dealt_blackjack
+		end
 		check_for_double
 		until @player_hand.active == false
 			round
 		end
-		compare
+		puts compare
 	end
 
 	def check_for_double
@@ -34,7 +40,10 @@ class Blackjack
 		response = gets.chomp
 		if response == 'yes'
 			@player.doubled = true
-			@player_hand.double_down(@cards.pop)
+			@card = @cards.pop
+			@player_hand.double_down(@card)
+			puts "Player gets a #{@card.value} and has a final of #{@player_hand.value}"
+			@dealer_hand.play(@cards)
 		end
 	end
 
@@ -53,7 +62,6 @@ class Blackjack
 		else
 			@dealer_hand.play(@cards)
 			@player_hand.active = false
-			puts compare
 		end
 	end
 
@@ -63,9 +71,6 @@ class Blackjack
 		2.times {player_cards.push(@cards.pop); dealer_cards.push(@cards.pop)}
 		@dealer_hand = DealerHand.new('Dealer', dealer_cards)
 		@player_hand = PlayerHand.new('Player', player_cards, @player.current_bet)
-		if @dealer_hand.blackjack || @player_hand.blackjack
-			return dealt_blackjack
-		end
 		show_status
 	end
 
@@ -80,11 +85,13 @@ class Blackjack
 		if @dealer_hand.blackjack
 			@player.loses
 			puts 'Player loses, dealer has blackjack'
+			return true
 		elsif @player_hand.blackjack
-			@player.current_bet *= 1.5
-			@player.wins
-			puts "Player has blackjack!  They are paid #{@player.current_bet}"
+			@player.wins_blackjack
+			puts "Player has blackjack!  They are paid #{@player.current_bet * 1.5}"
+			return true
 		end
+		false
 	end
 
 	def dealer_shows

@@ -25,21 +25,11 @@ class Hand
 
 	def hit(card)
 		@value += card.value
+		puts "#{@name} gets a #{card.rank}.  #{@name} now has #{@value}"
 		if card.rank == 'Ace'
 			@has_ace = true
 		end
-		if @value <= 21
-			return "#{@name} gets a #{card.rank}.  #{@name} now has #{@value}"
-		elsif @value > 21 && @has_ace
-			puts "#{@name} gets a #{card.rank}. #{@name} would have #{@value}"
-			puts "Ace will be treated as a 1"
-			@has_ace = false
-			@value -= 10
-			return "#{@name} now has #{@value}"
-		elsif @value > 21
-			bust_hand
-			return "#{@name} gets a #{card.value}. #{@name} has busted with #{@value}"
-		end
+		check_score
 	end
 
 	def bust_hand
@@ -53,7 +43,7 @@ class DealerHand < Hand
 	def play(remaining_cards)
 		puts "Dealer flips over a #{@cards[1].rank}.  They have #{@value}"
 		until @value > 16
-			sleep(1)
+			sleep(0.5)
 			self.hit(remaining_cards.pop)
 		end
 		if @value > 21
@@ -65,6 +55,20 @@ class DealerHand < Hand
 
 	end
 
+	def check_score
+		if @value <= 21
+			return
+		elsif @value > 21 && @has_ace
+			puts "Ace will be treated as a 1"
+			@has_ace = false
+			@value -= 10
+			return "#{@name} now has #{@value}"
+		elsif @value > 21
+			bust_hand
+			return "#{@name} has busted with #{@value}"
+		end
+	end
+
 end
 
 class PlayerHand < Hand
@@ -73,7 +77,6 @@ class PlayerHand < Hand
 	attr_reader :doubled
 
 	def initialize(name, cards, bet)
-		@busted = false
 		@has_ace = false
 		@name = name
 		@cards = cards
@@ -88,6 +91,20 @@ class PlayerHand < Hand
 	def double_down(card)
 		@value += card.value
 		@active = false
+	end
+
+	def check_score
+		if @value <= 21
+			return ''
+		elsif @value > 21 && @has_ace
+			puts "Ace will be treated as a 1"
+			@has_ace = false
+			@value -= 10
+			return "#{@name} now has #{@value}"
+		elsif @value > 21
+			bust_hand
+			return "#{@name} has busted with #{@value}"
+		end
 	end
 
 	def bust

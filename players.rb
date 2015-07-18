@@ -29,15 +29,22 @@ class Player
 	end
 
 	def wins
-		if @doubled = true
+		if @doubled == true
 			@bankroll += 2 * @current_bet
 		else
 			@bankroll += @current_bet
 		end
 	end
 
+	def wins_blackjack
+		@bankroll += 1.5 * @current_bet
+		if @bankroll / 1 == 0
+			@bankroll = @bankroll.to_int
+		end
+	end
+
 	def loses
-		if @doubled = true
+		if @doubled == true
 			@bankroll -= 2 * @current_bet
 		else
 			@bankroll -= @current_bet
